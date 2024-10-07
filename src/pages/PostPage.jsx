@@ -1,14 +1,14 @@
+import { useParams } from "react-router-dom";
+import { usePost } from "../hooks/usePost";
 import { useForm } from "react-hook-form";
-import { ErrorMessage } from "@hookform/error-message"
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
+import { ErrorMessage } from "@hookform/error-message";
+import { useUpdatePost } from "../hooks/useUpdatePost";
 
-const createPost = (post) => {
-  return axios.post('http://localhost:3000/posts', post)
-} 
+function PostPage() {
+    const {postId} = useParams();
+    const {data, isPending} = usePost({postId});
+    const mutate = useUpdatePost({postId});
 
-function CreatePost() {
-    const queryClient = useQueryClient()
     const {
         register,
         handleSubmit,
@@ -17,31 +17,23 @@ function CreatePost() {
         formState: { errors, isValid },
       } = useForm({
         criteriaMode: "all",
+        defaultValues: {...data}
         // mode: 'onBlur'
       })
 
-      const mutation = useMutation({
-        mutationKey: ['add post'],
-        mutationFn: createPost,
-        onSuccess: () => {
-          // Invalidate and refetch
-          queryClient.invalidateQueries({ queryKey: ['posts'] })
-        },
-        onError: (errors) => console.log(errors)
-      })
-    
+    const onSubmit = (post) => {
+       const updatedPost = {...post, views: 0}
+       mutate({updatedPost, postId});
+    }  
 
-      const onSubmit = (data) => {
-        mutation.mutate(data)
-        reset()
-      }
+    if (isPending) return <h2>Loading....</h2>
 
     return (
         <>
-        <h3>Create Post</h3>
+        <h1>Post {data.id}</h1>
         <form onSubmit={handleSubmit(onSubmit)}>
             <label>
-                Titlr
+                Title
                 <input
                     {...register("title", 
                     { 
@@ -55,6 +47,7 @@ function CreatePost() {
                             message: "This input to short.",
                         }
                     })}
+                    defaultValue={data.title}
                 />
             </label>  
             <ErrorMessage
@@ -70,8 +63,9 @@ function CreatePost() {
 
             <div><input disabled={!isValid} type="submit" /></div>
         </form>
+        <h3>{data.views}</h3>
         </>
     )
-};
+}
 
-export default CreatePost;
+export default PostPage;

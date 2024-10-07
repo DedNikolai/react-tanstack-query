@@ -1,9 +1,9 @@
 {
   "posts": [
     {
-      "id": "1",
-      "title": "a title",
-      "views": 100
+      "title": "Title",
+      "views": 1,
+      "id": "1"
     },
     {
       "id": "2",
@@ -23,8 +23,9 @@
       "title": "xxzv xv"
     },
     {
-      "id": "b405",
-      "title": "jkdenbvk"
+      "title": "scdscscf",
+      "views": 0,
+      "id": "b405"
     }
   ],
   "comments": [
